@@ -11,6 +11,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -38,13 +39,7 @@ public class OrderController {
                     request.amount()
             );
 
-            return new OrderResponse(
-                    order.getId(),
-                    order.getCustomerId(),
-                    order.getAmount(),
-                    order.getPaymentStatus().name(),
-                    order.getCreatedAt()
-            );
+            return toResponse(order);
 
         } catch (IllegalArgumentException exception) {
             throw new ResponseStatusException(
@@ -52,6 +47,23 @@ public class OrderController {
                     exception.getMessage()
             );
         }
+    }
+
+    @GetMapping
+    public List<OrderResponse> getOrders() {
+        return orderService.getOrders().stream()
+                .map(OrderController::toResponse)
+                .toList();
+    }
+
+    private static OrderResponse toResponse(Order order) {
+        return new OrderResponse(
+                order.getId(),
+                order.getCustomerId(),
+                order.getAmount(),
+                order.getPaymentStatus().name(),
+                order.getCreatedAt()
+        );
     }
 
     public record CreateOrderRequest(

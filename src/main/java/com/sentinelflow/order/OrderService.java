@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Service
 public class OrderService {
@@ -48,5 +49,10 @@ public class OrderService {
         order.setPaymentStatus(PaymentStatus.PENDING);
 
         return repository.saveAndFlush(order);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Order> getOrders() {
+        return repository.findAll();
     }
 }
